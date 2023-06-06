@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import (
     viewsets, pagination, permissions,
-    filters, mixins
+    filters, mixins, exceptions
 )
 
 from .permissions import AuthorOrReadOnly
@@ -54,3 +54,9 @@ class FollowViewSet (
 
     def get_queryset(self):
         return self.request.user.follower.all()
+    
+    def perform_create(self, serializer):
+        following_username = self.request.data.get('following')
+        if following_username == self.request.user.username:
+            raise exceptions.ValidationError('Нельзя подписаться сами на себя')
+        serializer.save(user=self.request.user)

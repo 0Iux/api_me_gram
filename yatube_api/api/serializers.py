@@ -1,11 +1,8 @@
-from rest_framework.serializers import (
-    ModelSerializer, CurrentUserDefault,
-    SlugRelatedField
-)
-from rest_framework.exceptions import ValidationError
+from rest_framework.serializers import CurrentUserDefault, ModelSerializer
+from rest_framework.serializers import SlugRelatedField
 from rest_framework.validators import UniqueTogetherValidator
 
-from posts.models import Comment, Post, Group, Follow, User
+from posts.models import Comment, Follow, Group, Post, User
 
 
 class GroupSerializer(ModelSerializer):
@@ -52,15 +49,3 @@ class FollowSerializer(ModelSerializer):
                 fields=['user', 'following']
             )
         ]
-
-    def create(self, validated_data):
-        user = self.context['request'].user
-        validated_data['user'] = user
-        return super().create(validated_data)
-
-    def validate(self, attrs):
-        user = self.context['request'].user
-        following = attrs.get('following')
-        if user == following:
-            raise ValidationError('Нельзя подписываться на самого себя.')
-        return attrs
