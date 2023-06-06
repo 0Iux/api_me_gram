@@ -54,7 +54,7 @@ class FollowViewSet (
 
     def get_queryset(self):
         return self.request.user.follower.all()
-    
+
     def perform_create(self, serializer):
         following_username = self.request.data.get('following')
         if following_username == self.request.user.username:
